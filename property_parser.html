@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Letting Data Parser</h2>
+
+<label for="inputData">Input Data:</label>
+<textarea id="inputData" rows="10" cols="50"></textarea>
+<br>
+<button onclick="parseData()">Parse Data</button>
+
+<h3>Parsed Data:</h3>
+<table id="parsedDataTable">
+  <tr>
+    <th>Full Name</th>
+    <th>Number</th>
+    <th>Email</th>
+    <th>Property of Interest</th>
+    <th>Move in Date</th>
+    <th>Budget</th>
+    <th>Number of Beds</th>
+  </tr>
+</table>
+
+<script>
+function parseData() {
+  const inputData = document.getElementById("inputData").value;
+  const forms = inputData.split('\n\n'); // Split input into separate forms
+
+  const table = document.getElementById("parsedDataTable");
+  const rows = table.getElementsByTagName('tr');
+
+  forms.forEach(form => {
+    let parsedData = {};
+    const lines = form.split('\n');
+
+    lines.forEach(line => {
+      const [key, value] = line.split(': ');
+      parsedData[key] = value;
+    });
+
+    const fullName = parsedData['First Name'] + ' ' + parsedData['Surname'];
+    const number = parsedData['Phone number'];
+    const email = parsedData['Email'];
+    const propertyOfInterest = parsedData['Development name'];
+    const moveInDate = parsedData['Moving Date'];
+    const budget = parsedData['Budget'];
+    const numberOfBeds = parsedData['Bedrooms'];
+
+    let existingRow = null;
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      if (row.cells[1].innerHTML === number || row.cells[2].innerHTML === email) {
+        existingRow = row;
+        break;
+      }
+    }
+
+    if (!!number && !existingRow) { // Skip row if number is blank or identical row exists
+      const row = table.insertRow(-1);
+      row.insertCell(0).innerHTML = fullName;
+      row.insertCell(1).innerHTML = number;
+      row.insertCell(2).innerHTML = email;
+      row.insertCell(3).innerHTML = propertyOfInterest;
+      row.insertCell(4).innerHTML = moveInDate;
+      row.insertCell(5).innerHTML = budget;
+      row.insertCell(6).innerHTML = numberOfBeds;
+    } else if (!!number && existingRow) { // Combine values with existing row if different
+      if (existingRow.cells[3].innerHTML !== propertyOfInterest) {
+        existingRow.cells[3].innerHTML += ', ' + propertyOfInterest;
+      }
+      if (existingRow.cells[4].innerHTML !== moveInDate) {
+        existingRow.cells[4].innerHTML += ', ' + moveInDate;
+      }
+      if (existingRow.cells[5].innerHTML !== budget) {
+        existingRow.cells[5].innerHTML += ', ' + budget;
+      }
+      if (existingRow.cells[6].innerHTML !== numberOfBeds) {
+        existingRow.cells[6].innerHTML += ', ' + numberOfBeds;
+      }
+    }
+  });
+}
+</script>
+
+</body>
+</html>
